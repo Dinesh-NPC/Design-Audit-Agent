@@ -2,27 +2,142 @@
 
 > **AI-powered UI design auditor built with Google Gemini 2.5 Flash Vision.**
 
-Accepts screenshots and returns structured, evidence-grounded design evaluations —
-covering visual hierarchy, contrast, spacing, alignment, and consistency.  
+Accepts screenshots and returns structured, evidence-grounded design evaluations — covering visual hierarchy, contrast, spacing, alignment, and consistency.
+
 Supports both single-image audits (Level 1) and before/after regression analysis (Level 2).
+
+---
+
+## Screenshots
+
+### Landing Page
+
+![Landing Page](screenshots/landing-page.png)
+
+### Dashboard
+
+![Dashboard](screenshots/dashboard.png)
+
+### Design Audit Report
+
+![Audit Report 1](screenshots/audit-report-1.png)
+
+![Audit Report 2](screenshots/audit-report-2.png)
+
+![Audit Report 3](screenshots/audit-report-3.png)
+
+![Audit Report 4](screenshots/audit-report-4.png)
+
+### Regression Analysis Report
+
+![Regression Report 1](screenshots/regression-report-1.png)
+
+![Regression Report 2](screenshots/regression-report-2.png)
+
+![Regression Report 3](screenshots/regression-report-3.png)
+
+![Regression Report 4](screenshots/regression-report-4.png)
 
 ---
 
 ## Features
 
-| | |
-|---|---|
-| **Level 1 — Design Audit** | Uploads one screenshot → AI analyses it against 5 design principles → returns severity-ranked findings with recommendations |
+|                                   |                                                                                                                                                          |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Level 1 — Design Audit**        | Uploads one screenshot → AI analyses it against 5 design principles → returns severity-ranked findings with recommendations                              |
 | **Level 2 — Regression Analysis** | Uploads before + after screenshots → AI detects every visual change → classifies as improvement / regression / neutral → flags accessibility regressions |
-| **JSON Reports** | Every analysis saved as downloadable structured JSON |
-| **Report History** | Lightweight index of last 50 reports, viewable in dashboard |
-| **Modern UI** | Dark industrial dashboard with drag-and-drop uploads, confidence bars, severity badges, and loading animations |
+| **JSON Reports**                  | Every analysis saved as downloadable structured JSON                                                                                                     |
+| **Report History**                | Lightweight index of last 50 reports, viewable in dashboard                                                                                              |
+| **Modern UI**                     | Dark industrial dashboard with drag-and-drop uploads, confidence bars, severity badges, and loading animations                                           |
 
+---
+
+## Challenge Coverage
+
+### Level 1 — Single Page Design Analysis
+
+✅ Accepts PNG, JPG and WebP screenshots
+
+✅ Evaluates:
+
+* Visual Hierarchy
+* Contrast
+* Spacing
+* Alignment
+* Consistency
+
+✅ Identifies design issues with:
+
+* Severity Classification
+* Confidence Score
+* User Impact
+* Actionable Recommendations
+
+✅ Produces structured JSON output
+
+---
+
+### Level 2 — Before / After Regression Analysis
+
+✅ Accepts baseline and current screenshots
+
+✅ Detects visual differences
+
+✅ Classifies changes as:
+
+* Improvement
+* Regression
+* Neutral
+
+✅ Generates:
+
+* User Impact Analysis
+* Confidence Scores
+* Accessibility Findings
+* Overall Verdict
+
+✅ Produces structured JSON output
+
+---
+
+## Architecture
+
+```text
+User Upload
+     │
+     ▼
+Frontend Dashboard
+(HTML • CSS • JavaScript)
+     │
+     ▼
+Flask Backend
+(Route Handling)
+     │
+     ├── Design Audit Agent (Level 1)
+     │
+     └── Regression Agent (Level 2)
+                │
+                ▼
+      Gemini 2.5 Flash Vision
+                │
+                ▼
+      Structured JSON Response
+                │
+                ▼
+      Report Processing Layer
+                │
+      ┌─────────┴─────────┐
+      ▼                   ▼
+ HTML Report         JSON Report
+      │
+      ▼
+ Report History & Dashboard
+```
 ---
 
 ## Project Structure
 
-```
+```text
 design_audit_agent/
 ├── app.py                      # Flask application & routes
 ├── agents/
@@ -42,6 +157,7 @@ design_audit_agent/
 │       └── main.js             # Upload, validation, history JS
 ├── uploads/                    # Uploaded screenshots (auto-created)
 ├── reports/                    # JSON report files (auto-created)
+├── screenshots/                # README screenshots
 ├── requirements.txt
 ├── .env.example
 └── README.md
@@ -49,10 +165,35 @@ design_audit_agent/
 
 ---
 
+## Tech Stack
+
+### Backend
+
+* Python 3.10+
+* Flask
+
+### AI Layer
+
+* Google Gemini 2.5 Flash Vision
+* Google GenAI SDK
+
+### Frontend
+
+* HTML5
+* CSS3
+* JavaScript
+
+### Storage
+
+* JSON Report Persistence
+* Report History Index
+
+---
+
 ## Prerequisites
 
-- Python 3.10 or higher
-- A Google Gemini API key with access to `gemini-2.5-flash`
+* Python 3.10 or higher
+* A Google Gemini API key with access to `gemini-2.5-flash`
 
 ---
 
@@ -61,6 +202,8 @@ design_audit_agent/
 ### 1. Clone / Download
 
 ```bash
+git clone <repository-url>
+
 cd design_audit_agent
 ```
 
@@ -68,8 +211,12 @@ cd design_audit_agent
 
 ```bash
 python -m venv venv
-source venv/bin/activate        # macOS / Linux
-venv\Scripts\activate           # Windows
+
+# macOS / Linux
+source venv/bin/activate
+
+# Windows
+venv\Scripts\activate
 ```
 
 ### 3. Install Dependencies
@@ -86,14 +233,16 @@ cp .env.example .env
 
 Edit `.env` and add your Gemini API key:
 
-```
+```env
 GEMINI_API_KEY=your_api_key_here
 FLASK_SECRET_KEY=any_random_string
 MAX_FILE_SIZE_MB=10
 FLASK_ENV=development
 ```
 
-Get your API key at: https://aistudio.google.com/app/apikey
+Get your API key at:
+
+https://aistudio.google.com/app/apikey
 
 ---
 
@@ -105,9 +254,13 @@ Get your API key at: https://aistudio.google.com/app/apikey
 python app.py
 ```
 
-The app starts at **http://localhost:5000**
+The application will start at:
 
-### Production (Gunicorn)
+```text
+http://localhost:5000
+```
+
+### Production
 
 ```bash
 gunicorn -w 2 -b 0.0.0.0:5000 app:app
@@ -119,113 +272,124 @@ gunicorn -w 2 -b 0.0.0.0:5000 app:app
 
 ### Level 1 — Single Screenshot Audit
 
-1. Open **http://localhost:5000**
-2. In **Card 1 (Single Screenshot Audit)**, drag-and-drop or click to upload a UI screenshot (PNG, JPG, or WebP, max 10 MB)
+1. Open `http://localhost:5000`
+2. Upload a UI screenshot (PNG, JPG, or WebP)
 3. Click **Run Design Audit**
-4. Wait 15–30 seconds while Gemini analyses the image
-5. View the report with severity-ranked findings, confidence bars, and recommendations
-6. Download the full JSON report
+4. Wait for Gemini analysis
+5. Review findings, severity levels, confidence scores, and recommendations
+6. Download the generated JSON report
 
-### Level 2 — Before / After Regression
+### Level 2 — Before / After Regression Analysis
 
-1. Open **http://localhost:5000**
-2. In **Card 2 (Before / After Comparison)**, upload a BEFORE and an AFTER screenshot
-3. Click **Run Regression Analysis**
-4. Wait 20–40 seconds
-5. View the report with classified changes, accessibility flags, and an overall verdict
-6. Download the full JSON report
+1. Open `http://localhost:5000`
+2. Upload a BEFORE screenshot
+3. Upload an AFTER screenshot
+4. Click **Run Regression Analysis**
+5. Review detected changes
+6. Analyze improvements, regressions, and accessibility impacts
+7. Download the generated JSON report
 
 ### Report History
 
-- Click **History** in the navbar to view recent reports
-- Each entry links to the full report page
+* View previous reports from the dashboard
+* Access stored analyses
+* Revisit JSON reports
+
+---
+
+## Sample Output
+
+### Level 1 — Audit Finding
+
+```json
+{
+  "principle": "Contrast",
+  "severity": "high",
+  "location": "Hero CTA Button",
+  "user_impact": "Reduced readability for users with low vision",
+  "recommendation": "Increase contrast ratio to at least 4.5:1",
+  "confidence": 91
+}
+```
+
+### Level 2 — Regression Finding
+
+```json
+{
+  "location": "Navigation Bar",
+  "change": "Primary CTA color updated",
+  "classification": "improvement",
+  "user_impact": "Improved visibility and discoverability",
+  "confidence": 94
+}
+```
 
 ---
 
 ## API Endpoints
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/` | Dashboard |
-| `POST` | `/audit` | Run Level 1 design audit |
-| `POST` | `/regression` | Run Level 2 regression analysis |
-| `GET` | `/report/<id>` | View rendered report |
-| `GET` | `/report/<id>/json` | Download JSON report |
-| `GET` | `/history` | List recent reports (JSON) |
-| `DELETE` | `/report/<id>` | Delete a report |
-
----
-
-## Report Schema
-
-### Level 1 — Audit
-
-```json
-{
-  "summary": "...",
-  "score": 72,
-  "findings": [
-    {
-      "id": "F001",
-      "principle": "Contrast",
-      "severity": "high",
-      "location": "Hero section CTA button",
-      "observation": "Light grey text on white background...",
-      "user_impact": "Users with low vision will struggle...",
-      "recommendation": "Increase contrast ratio to at least 4.5:1",
-      "confidence": 91
-    }
-  ],
-  "positive_aspects": ["..."],
-  "priority_fixes": ["..."]
-}
-```
-
-### Level 2 — Regression
-
-```json
-{
-  "changes": [
-    {
-      "id": "C001",
-      "location": "Hero CTA",
-      "change": "Button color changed from grey to blue",
-      "classification": "improvement",
-      "reasoning": "Higher contrast improves discoverability",
-      "user_impact": "Improved CTA visibility for all users",
-      "confidence": 94,
-      "accessibility_flag": false,
-      "change_type": "contrast"
-    }
-  ],
-  "overall_verdict": "Net Improvement",
-  "verdict_reasoning": "...",
-  "change_counts": { "improvement": 4, "regression": 1, "neutral": 2 }
-}
-```
+| Method | Path                | Description                     |
+| ------ | ------------------- | ------------------------------- |
+| GET    | `/`                 | Dashboard                       |
+| POST   | `/audit`            | Run Level 1 Design Audit        |
+| POST   | `/regression`       | Run Level 2 Regression Analysis |
+| GET    | `/report/<id>`      | View rendered report            |
+| GET    | `/report/<id>/json` | Download JSON report            |
+| GET    | `/history`          | List recent reports             |
+| DELETE | `/report/<id>`      | Delete report                   |
 
 ---
 
 ## Design Decisions
 
-- **Low temperature (0.1)** on Gemini calls ensures deterministic, factual output
-- **Retry logic** (3 attempts, exponential backoff) handles transient API errors
-- **JSON extraction** handles markdown-fenced responses and malformed output gracefully
-- **Evidence-only prompting** instructs the model to only report what is directly visible
-- **Findings sorted** by severity then confidence for actionable output
-- **Report history** stored as a lightweight JSON index (no database required)
+* **Low temperature (0.1)** to improve consistency and reduce hallucinations
+* **Structured JSON output** for machine-readable reporting
+* **Retry logic** with exponential backoff for Gemini API reliability
+* **Evidence-only prompting** to minimize unsupported findings
+* **Severity-first prioritization** for actionable recommendations
+* **Lightweight local storage** without requiring a database
+* **Confidence scoring** for transparency and trustworthiness
 
 ---
 
 ## Limitations
 
-- Requires a valid Gemini API key with quota
-- Analysis quality depends on image resolution (higher-res screenshots yield better results)
-- Gemini may occasionally misidentify element locations — confidence scores indicate certainty
-- Not a replacement for professional WCAG auditing tools (e.g. axe, WAVE)
+* Requires a valid Gemini API key and available quota
+* Analysis quality depends on screenshot resolution
+* AI-generated findings may occasionally require manual review
+* Not intended as a replacement for dedicated WCAG auditing tools such as axe or WAVE
+
+---
+
+## Future Improvements
+
+* Pixel-level visual difference detection
+* Automated browser-based auditing
+* WCAG compliance scoring
+* Multi-page website auditing
+* PDF report generation
+* Team collaboration features
+* Browser extension integration
+* CI/CD visual regression testing
+
+---
+
+## Author
+
+**Dinesh Kumar T**
+
+B.Tech Information Technology
+
+Kumaraguru College of Technology
+
+GitHub: https://github.com/Dinesh-NPC
+
+LinkedIn: https://www.linkedin.com/in/dinesh-kumar-kct/
 
 ---
 
 ## License
 
-MIT — free to use, modify, and distribute.
+MIT License
+
+Free to use, modify, and distribute.
