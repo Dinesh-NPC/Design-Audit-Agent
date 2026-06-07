@@ -8,37 +8,7 @@ Supports both single-image audits (Level 1) and before/after regression analysis
 
 ---
 
-## Screenshots
 
-### Landing Page
-
-![Landing Page](screenshots/landing-page.png)
-
-### Dashboard
-
-![Dashboard](screenshots/dashboard.png)
-
-### Design Audit Report
-
-![Audit Report 1](screenshots/audit-report-1.png)
-
-![Audit Report 2](screenshots/audit-report-2.png)
-
-![Audit Report 3](screenshots/audit-report-3.png)
-
-![Audit Report 4](screenshots/audit-report-4.png)
-
-### Regression Analysis Report
-
-![Regression Report 1](screenshots/regression-report-1.png)
-
-![Regression Report 2](screenshots/regression-report-2.png)
-
-![Regression Report 3](screenshots/regression-report-3.png)
-
-![Regression Report 4](screenshots/regression-report-4.png)
-
----
 
 ## Features
 
@@ -133,6 +103,34 @@ Flask Backend
       ▼
  Report History & Dashboard
 ```
+---
+
+## Screenshots
+
+### Landing Page
+
+![Landing Page](screenshots/landing-page.png)
+
+### Dashboard
+
+![Dashboard](screenshots/dashboard.png)
+
+### Design Audit Report
+
+![Audit Report 1](screenshots/audit-report-1.png)
+
+![Audit Report 2](screenshots/audit-report-2.png)
+
+![Audit Report 4](screenshots/audit-report-4.png)
+
+### Regression Analysis Report
+
+![Regression Report 1](screenshots/regression-report-1.png)
+
+![Regression Report 2](screenshots/regression-report-2.png)
+
+![Regression Report 4](screenshots/regression-report-4.png)
+
 ---
 
 ## Project Structure
