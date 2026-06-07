@@ -8,7 +8,17 @@ Supports both single-image audits (Level 1) and before/after regression analysis
 
 ---
 
+## 🚀 Live Demo
 
+**Try the deployed application:**
+
+### 🌐 https://design-audit-agent.onrender.com/
+
+Test both:
+- Level 1 — Single Screenshot Design Audit
+- Level 2 — Before/After Regression Analysis
+
+---
 
 ## Features
 
@@ -19,6 +29,7 @@ Supports both single-image audits (Level 1) and before/after regression analysis
 | **JSON Reports**                  | Every analysis saved as downloadable structured JSON                                                                                                     |
 | **Report History**                | Lightweight index of last 50 reports, viewable in dashboard                                                                                              |
 | **Modern UI**                     | Dark industrial dashboard with drag-and-drop uploads, confidence bars, severity badges, and loading animations                                           |
+| **Live Deployment** | Publicly accessible web application hosted on Render |
 
 ---
 
@@ -119,15 +130,11 @@ Flask Backend
 
 ![Audit Report 1](screenshots/audit-report-1.png)
 
-![Audit Report 2](screenshots/audit-report-2.png)
-
 ![Audit Report 4](screenshots/audit-report-4.png)
 
 ### Regression Analysis Report
 
 ![Regression Report 1](screenshots/regression-report-1.png)
-
-![Regression Report 2](screenshots/regression-report-2.png)
 
 ![Regression Report 4](screenshots/regression-report-4.png)
 
