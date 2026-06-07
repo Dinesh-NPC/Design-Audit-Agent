@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Design Audit Agent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+</head>
+<body>
+
+<!-- ── Navigation ─────────────────────────────────────────────────────────── -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a class="brand" href="/">
+      <span class="brand-mark">◈</span>
+      <span class="brand-name">Design<span class="accent">Audit</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="#audit-section" class="nav-link">Single Audit</a>
+      <a href="#regression-section" class="nav-link">Regression</a>
+      <button class="nav-link btn-ghost" onclick="loadHistory()">
+        <i class="bi bi-clock-history"></i> History
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Hero ───────────────────────────────────────────────────────────────── -->
+<header class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <i class="bi bi-cpu-fill"></i> Powered by Gemini 2.5 Flash Vision
+    </div>
+    <h1 class="hero-title">
+      AI-Powered<br />
+      <em>Design Auditor</em>
+    </h1>
+    <p class="hero-sub">
+      Upload any UI screenshot and receive a comprehensive analysis of visual hierarchy,
+      contrast, spacing, alignment, and consistency — grounded in visible evidence.
+    </p>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">5</span><span class="stat-label">Principles</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><span class="stat-num">AI</span><span class="stat-label">Powered</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><span class="stat-num">JSON</span><span class="stat-label">Reports</span></div>
+    </div>
+  </div>
+</header>
+
+<!-- ── Main Content ────────────────────────────────────────────────────────── -->
+<main class="main-content">
+
+  <!-- Error Alert -->
+  <div id="error-alert" class="error-alert hidden">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    <span id="error-msg">An error occurred.</span>
+    <button onclick="dismissError()"><i class="bi bi-x-lg"></i></button>
+  </div>
+
+  <!-- ── Cards Row ──────────────────────────────────────────────────────────── -->
+  <div class="cards-row">
+
+    <!-- Card 1: Single Audit -->
+    <div class="upload-card" id="audit-section">
+      <div class="card-header-row">
+        <div class="card-icon card-icon--blue">
+          <i class="bi bi-search"></i>
+        </div>
+        <div>
+          <h2 class="card-title">Single Screenshot Audit</h2>
+          <p class="card-subtitle">Level 1 — Comprehensive design evaluation</p>
+        </div>
+      </div>
+
+      <div class="principles-grid">
+        <span class="principle-chip"><i class="bi bi-layers"></i> Hierarchy</span>
+        <span class="principle-chip"><i class="bi bi-circle-half"></i> Contrast</span>
+        <span class="principle-chip"><i class="bi bi-distribute-vertical"></i> Spacing</span>
+        <span class="principle-chip"><i class="bi bi-layout-text-sidebar"></i> Alignment</span>
+        <span class="principle-chip"><i class="bi bi-grid-3x3"></i> Consistency</span>
+      </div>
+
+      <form id="audit-form" enctype="multipart/form-data">
+        <div
+          class="drop-zone"
+          id="audit-drop"
+          ondragover="onDragOver(event)"
+          ondragleave="onDragLeave(event)"
+          ondrop="onDrop(event,'audit-file','audit-preview','audit-drop')"
+          onclick="document.getElementById('audit-file').click()"
+        >
+          <div class="drop-icon"><i class="bi bi-cloud-arrow-up"></i></div>
+          <p class="drop-primary">Drop screenshot here or <span class="link-text">browse</span></p>
+          <p class="drop-secondary">PNG, JPG, WebP · Max 10 MB</p>
+          <input type="file" id="audit-file" name="screenshot" accept=".png,.jpg,.jpeg,.webp" class="hidden" onchange="onFileChange(this,'audit-preview','audit-drop')" />
+        </div>
+
+        <div id="audit-preview" class="preview-area hidden">
+          <img id="audit-thumb" class="preview-thumb" src="" alt="Preview" />
+          <div class="preview-meta">
+            <span id="audit-fname" class="preview-name"></span>
+            <span id="audit-fsize" class="preview-size"></span>
+            <button type="button" class="remove-btn" onclick="clearFile('audit-file','audit-preview','audit-drop')">
+              <i class="bi bi-x-circle-fill"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn submit-btn--blue">
+          <i class="bi bi-search"></i> Run Design Audit
+        </button>
+      </form>
+    </div>
+
+    <!-- Card 2: Before/After Regression -->
+    <div class="upload-card" id="regression-section">
+      <div class="card-header-row">
+        <div class="card-icon card-icon--violet">
+          <i class="bi bi-arrow-left-right"></i>
+        </div>
+        <div>
+          <h2 class="card-title">Before / After Comparison</h2>
+          <p class="card-subtitle">Level 2 — Visual regression analysis</p>
+        </div>
+      </div>
+
+      <div class="principles-grid">
+        <span class="principle-chip principle-chip--violet"><i class="bi bi-arrow-up-circle"></i> Improvements</span>
+        <span class="principle-chip principle-chip--violet"><i class="bi bi-arrow-down-circle"></i> Regressions</span>
+        <span class="principle-chip principle-chip--violet"><i class="bi bi-universal-access"></i> Accessibility</span>
+        <span class="principle-chip principle-chip--violet"><i class="bi bi-eye"></i> Readability</span>
+        <span class="principle-chip principle-chip--violet"><i class="bi bi-check2-circle"></i> Verdict</span>
+      </div>
+
+      <form id="regression-form" enctype="multipart/form-data">
+        <div class="dual-upload">
+          <!-- Before -->
+          <div>
+            <label class="upload-label upload-label--before">BEFORE</label>
+            <div
+              class="drop-zone drop-zone--sm"
+              id="before-drop"
+              ondragover="onDragOver(event)"
+              ondragleave="onDragLeave(event)"
+              ondrop="onDrop(event,'before-file','before-preview','before-drop')"
+              onclick="document.getElementById('before-file').click()"
+            >
+              <div class="drop-icon"><i class="bi bi-file-image"></i></div>
+              <p class="drop-primary-sm">Drop or click</p>
+              <input type="file" id="before-file" name="before_screenshot" accept=".png,.jpg,.jpeg,.webp" class="hidden" onchange="onFileChange(this,'before-preview','before-drop')" />
+            </div>
+            <div id="before-preview" class="preview-area hidden">
+              <img id="before-thumb" class="preview-thumb" src="" alt="Before" />
+              <div class="preview-meta">
+                <span id="before-fname" class="preview-name"></span>
+                <button type="button" class="remove-btn" onclick="clearFile('before-file','before-preview','before-drop')">
+                  <i class="bi bi-x-circle-fill"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="swap-icon"><i class="bi bi-arrow-right"></i></div>
+
+          <!-- After -->
+          <div>
+            <label class="upload-label upload-label--after">AFTER</label>
+            <div
+              class="drop-zone drop-zone--sm"
+              id="after-drop"
+              ondragover="onDragOver(event)"
+              ondragleave="onDragLeave(event)"
+              ondrop="onDrop(event,'after-file','after-preview','after-drop')"
+              onclick="document.getElementById('after-file').click()"
+            >
+              <div class="drop-icon"><i class="bi bi-file-image"></i></div>
+              <p class="drop-primary-sm">Drop or click</p>
+              <input type="file" id="after-file" name="after_screenshot" accept=".png,.jpg,.jpeg,.webp" class="hidden" onchange="onFileChange(this,'after-preview','after-drop')" />
+            </div>
+            <div id="after-preview" class="preview-area hidden">
+              <img id="after-thumb" class="preview-thumb" src="" alt="After" />
+              <div class="preview-meta">
+                <span id="after-fname" class="preview-name"></span>
+                <button type="button" class="remove-btn" onclick="clearFile('after-file','after-preview','after-drop')">
+                  <i class="bi bi-x-circle-fill"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn submit-btn--violet">
+          <i class="bi bi-arrow-left-right"></i> Run Regression Analysis
+        </button>
+      </form>
+    </div>
+
+  </div><!-- /cards-row -->
+
+  <!-- ── History Panel ────────────────────────────────────────────────────── -->
+  <div class="history-section" id="history-section" style="display:none">
+    <div class="section-header">
+      <h3 class="section-title"><i class="bi bi-clock-history"></i> Recent Reports</h3>
+      <button class="btn-ghost" onclick="document.getElementById('history-section').style.display='none'">
+        <i class="bi bi-x-lg"></i> Close
+      </button>
+    </div>
+    <div id="history-list" class="history-list"></div>
+  </div>
+
+</main>
+
+<!-- ── Loading Overlay ─────────────────────────────────────────────────────── -->
+<div id="loading-overlay" class="loading-overlay hidden">
+  <div class="loading-box">
+    <div class="spinner"></div>
+    <p class="loading-title" id="loading-title">Analysing design…</p>
+    <p class="loading-sub" id="loading-sub">Running Gemini Vision analysis. This may take 15–30 seconds.</p>
+    <div class="loading-steps">
+      <div class="step" id="step-1"><i class="bi bi-check2-circle"></i> Upload validated</div>
+      <div class="step step-active" id="step-2"><i class="bi bi-cpu-fill"></i> Gemini analysing…</div>
+      <div class="step step-dim" id="step-3"><i class="bi bi-file-earmark-text"></i> Generating report</div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

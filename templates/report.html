@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>
+    {% if report_type == 'audit' %}Design Audit Report{% else %}Regression Report{% endif %}
+    — {{ report_id }}
+  </title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/report.css') }}" />
+</head>
+<body class="report-page">
+
+<!-- ── Navigation ─────────────────────────────────────────────────────────── -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a class="brand" href="/">
+      <span class="brand-mark">◈</span>
+      <span class="brand-name">Design<span class="accent">Audit</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="/" class="nav-link"><i class="bi bi-arrow-left"></i> New Analysis</a>
+      <a href="/report/{{ report_id }}/json" class="nav-link nav-link--download">
+        <i class="bi bi-download"></i> Download JSON
+      </a>
+    </div>
+  </div>
+</nav>
+
+<main class="report-main">
+
+  <!-- ── Report Header ────────────────────────────────────────────────────── -->
+  <div class="report-header">
+    <div class="report-meta">
+      <div class="report-badge">
+        {% if report_type == 'audit' %}
+          <i class="bi bi-search"></i> Level 1 — Design Audit
+        {% else %}
+          <i class="bi bi-arrow-left-right"></i> Level 2 — Regression Analysis
+        {% endif %}
+      </div>
+      <h1 class="report-title">
+        {% if report_type == 'audit' %}
+          Design Audit Report
+        {% else %}
+          Visual Regression Report
+        {% endif %}
+      </h1>
+      <div class="report-subtitle-row">
+        <span class="report-id">ID: <code>{{ report_id }}</code></span>
+        <span class="report-dot">·</span>
+        <span class="report-filename">{{ original_filename }}</span>
+        <span class="report-dot">·</span>
+        <span class="report-time">{{ timestamp | replace('T',' ') | replace('Z','') }} UTC</span>
+      </div>
+    </div>
+
+    <!-- Score (audit) or Verdict (regression) -->
+    {% if report_type == 'audit' %}
+    <div class="score-ring score-ring--{{ data.score_color }}">
+      <svg viewBox="0 0 120 120" class="ring-svg">
+        <circle cx="60" cy="60" r="50" class="ring-bg" />
+        <circle cx="60" cy="60" r="50" class="ring-fill"
+          stroke-dasharray="{{ (data.score / 100 * 314.16) | round(1) }} 314.16"
+          stroke-dashoffset="78.5" />
+      </svg>
+      <div class="ring-inner">
+        <span class="ring-num">{{ data.score }}</span>
+        <span class="ring-label">/ 100</span>
+      </div>
+    </div>
+    {% else %}
+    <div class="verdict-badge verdict-badge--{{ data.verdict_color }}">
+      <i class="bi {{ data.verdict_icon }}"></i>
+      <span>{{ data.overall_verdict }}</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  {% if report_type == 'audit' %}
+  <!-- ── AUDIT REPORT ──────────────────────────────────────────────────── -->
+
+  <!-- Summary + Stats -->
+  <div class="summary-strip">
+    <div class="summary-text">
+      <h3 class="summary-head">Overview</h3>
+      <p class="summary-body">{{ data.summary }}</p>
+    </div>
+    <div class="severity-stats">
+      {% for sev, count in data.severity_counts.items() %}
+      <div class="sev-stat sev-stat--{{ sev }}">
+        <span class="sev-num">{{ count }}</span>
+        <span class="sev-lab">{{ sev }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Priority Fixes -->
+  {% if data.priority_fixes %}
+  <div class="priority-strip">
+    <h3 class="priority-head"><i class="bi bi-lightning-fill"></i> Priority Fixes</h3>
+    <ol class="priority-list">
+      {% for fix in data.priority_fixes %}
+      <li>{{ fix }}</li>
+      {% endfor %}
+    </ol>
+  </div>
+  {% endif %}
+
+  <!-- Findings -->
+  <div class="findings-section">
+    <h3 class="section-title-lg">
+      Findings
+      <span class="badge-count">{{ data.total_findings }}</span>
+    </h3>
+    <div class="findings-grid">
+      {% for f in data.findings %}
+      <div class="finding-card finding-card--{{ f.severity }}">
+        <div class="finding-top">
+          <div class="finding-left">
+            <i class="bi {{ f.icon }} principle-icon"></i>
+            <div>
+              <div class="finding-principle">{{ f.principle }}</div>
+              <div class="finding-location"><i class="bi bi-geo-alt"></i> {{ f.location }}</div>
+            </div>
+          </div>
+          <div class="finding-badges">
+            <span class="badge-sev badge-sev--{{ f.severity }}">{{ f.severity }}</span>
+            <span class="badge-id">{{ f.id }}</span>
+          </div>
+        </div>
+
+        <p class="finding-observation">{{ f.observation }}</p>
+
+        <div class="finding-detail-grid">
+          <div class="detail-block">
+            <span class="detail-label"><i class="bi bi-person-fill"></i> User Impact</span>
+            <span class="detail-body">{{ f.user_impact }}</span>
+          </div>
+          <div class="detail-block">
+            <span class="detail-label"><i class="bi bi-tools"></i> Recommendation</span>
+            <span class="detail-body">{{ f.recommendation }}</span>
+          </div>
+        </div>
+
+        <div class="confidence-bar-row">
+          <span class="confidence-label">Confidence</span>
+          <div class="confidence-track">
+            <div class="confidence-fill confidence-fill--{{ f.severity }}" style="width: {{ f.confidence }}%"></div>
+          </div>
+          <span class="confidence-num">{{ f.confidence }}%</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Positive Aspects -->
+  {% if data.positive_aspects %}
+  <div class="positives-section">
+    <h3 class="section-title-lg"><i class="bi bi-hand-thumbs-up-fill"></i> What's Working Well</h3>
+    <div class="positives-grid">
+      {% for p in data.positive_aspects %}
+      <div class="positive-chip"><i class="bi bi-check2-circle"></i> {{ p }}</div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  {% else %}
+  <!-- ── REGRESSION REPORT ─────────────────────────────────────────────── -->
+
+  <!-- Verdict Summary -->
+  <div class="summary-strip">
+    <div class="summary-text">
+      <h3 class="summary-head">Verdict Reasoning</h3>
+      <p class="summary-body">{{ data.verdict_reasoning }}</p>
+    </div>
+    <div class="change-stats">
+      <div class="cs-item cs-item--improvement">
+        <i class="bi bi-arrow-up-circle-fill"></i>
+        <span class="cs-num">{{ data.change_counts.improvement }}</span>
+        <span class="cs-lab">Improvements</span>
+      </div>
+      <div class="cs-item cs-item--regression">
+        <i class="bi bi-arrow-down-circle-fill"></i>
+        <span class="cs-num">{{ data.change_counts.regression }}</span>
+        <span class="cs-lab">Regressions</span>
+      </div>
+      <div class="cs-item cs-item--neutral">
+        <i class="bi bi-dash-circle-fill"></i>
+        <span class="cs-num">{{ data.change_counts.neutral }}</span>
+        <span class="cs-lab">Neutral</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- A11y Regressions -->
+  {% if data.accessibility_regressions %}
+  <div class="a11y-warning">
+    <div class="a11y-head">
+      <i class="bi bi-universal-access"></i>
+      <strong>Accessibility Regressions Detected</strong>
+    </div>
+    <ul class="a11y-list">
+      {% for item in data.accessibility_regressions %}
+      <li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <!-- Improvements / Regressions Summaries -->
+  {% if data.improvements_summary or data.regressions_summary %}
+  <div class="summaries-row">
+    {% if data.improvements_summary %}
+    <div class="summary-card summary-card--improvement">
+      <h4><i class="bi bi-graph-up-arrow"></i> Improvements</h4>
+      <p>{{ data.improvements_summary }}</p>
+    </div>
+    {% endif %}
+    {% if data.regressions_summary %}
+    <div class="summary-card summary-card--regression">
+      <h4><i class="bi bi-graph-down-arrow"></i> Regressions</h4>
+      <p>{{ data.regressions_summary }}</p>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Changes List -->
+  <div class="findings-section">
+    <h3 class="section-title-lg">
+      Detected Changes
+      <span class="badge-count">{{ data.total_changes }}</span>
+    </h3>
+    <div class="findings-grid">
+      {% for c in data.changes %}
+      <div class="finding-card finding-card--regression-{{ c.classification }}">
+        <div class="finding-top">
+          <div class="finding-left">
+            <i class="bi {{ c.change_type_icon }} principle-icon principle-icon--{{ c.classification }}"></i>
+            <div>
+              <div class="finding-principle">{{ c.location }}</div>
+              <div class="finding-location">
+                <i class="bi {{ c.change_type_icon }}"></i> {{ c.change_type }}
+                {% if c.accessibility_flag %}
+                  <span class="a11y-tag"><i class="bi bi-universal-access"></i> A11Y</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          <div class="finding-badges">
+            <span class="badge-cls badge-cls--{{ c.classification }}">
+              <i class="bi {{ c.classification_icon }}"></i>
+              {{ c.classification }}
+            </span>
+            <span class="badge-id">{{ c.id }}</span>
+          </div>
+        </div>
+
+        <p class="finding-observation">{{ c.change }}</p>
+
+        <div class="finding-detail-grid">
+          <div class="detail-block">
+            <span class="detail-label"><i class="bi bi-chat-left-quote"></i> Reasoning</span>
+            <span class="detail-body">{{ c.reasoning }}</span>
+          </div>
+          <div class="detail-block">
+            <span class="detail-label"><i class="bi bi-person-fill"></i> User Impact</span>
+            <span class="detail-body">{{ c.user_impact }}</span>
+          </div>
+        </div>
+
+        <div class="confidence-bar-row">
+          <span class="confidence-label">Confidence</span>
+          <div class="confidence-track">
+            <div class="confidence-fill confidence-fill--cls-{{ c.classification }}" style="width: {{ c.confidence }}%"></div>
+          </div>
+          <span class="confidence-num">{{ c.confidence }}%</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% endif %}
+  <!-- /report type -->
+
+  <!-- Download CTA -->
+  <div class="download-cta">
+    <a href="/report/{{ report_id }}/json" class="download-btn">
+      <i class="bi bi-file-earmark-code"></i> Download Full JSON Report
+    </a>
+    <a href="/" class="new-btn">
+      <i class="bi bi-plus-circle"></i> New Analysis
+    </a>
+  </div>
+
+</main>
+</body>
+</html>
